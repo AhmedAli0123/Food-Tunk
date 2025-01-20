@@ -10,9 +10,9 @@ import {
   removeFromCart,
 } from "../store/feature/cart";
 import { Cart } from "../utilits/type";
-import TotalAmount from "./TotalAmount";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Bounce, toast } from "react-toastify";
 
 function CartPage() {
   const cart: Cart[] | any = useAppSelector((state) => state.cart);
@@ -25,9 +25,30 @@ function CartPage() {
     0
   );
 
+
+  const handleNotification = () => {toast.error('🦄 Wow so easy!', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: false,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+    transition: Bounce,
+    });
+  }  
+
+
   // Cart Transfer to checkout page
   const router = useRouter();
- 
+  function handleNavigation(){
+    if(cart.length==0){
+      alert("Cart is empty")
+      return;
+    }
+    router.push("/checkout")
+  }
 
 
     
@@ -136,7 +157,56 @@ function CartPage() {
 </div>
 
      
-      <TotalAmount amount={totalAmount} />
+<div className="flex flex-col md:flex-row  justify-between items-start md:items-center gap-6 p-6   max-w-4xl mx-auto rounded-lg">
+      {/* Coupon Code Section */}
+      <div className="w-full md:w-1/2 p-4  rounded-lg ">
+        <h3 className="text-xl font-semibold mb-4">Coupon Code</h3>
+        <div className='border px-[24px] py-[20px]'>
+        <p className="text-gray-400 text-sm mb-4">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+          diam pellentesque bibendum non.
+        </p>
+        <div className="flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="Enter Here code"
+            className="flex-grow p-2 border border-gray-700 rounded-lg   placeholder-gray-500"
+          />
+          <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-4 py-2 rounded-lg">
+            Apply
+          </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Total Bill Section */}
+      <div className="w-full md:w-1/2 p-4  rounded-lg">
+        <h3 className="text-xl font-semibold mb-4">Total Bill</h3>
+        <div className='border py-5 px-5 rounded'>
+        <div className="space-y-2 ">
+          <div className="flex justify-between ">
+            <span className="text-[20px] font-bold   text-[#333333]">Cart Subtotal</span>
+            <span className="text-[18px] font-bold   text-[#333333]">${(totalAmount).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Shipping Charge</span>
+            <span className="font-semibold">$0.00</span>
+          </div>
+            <hr className='w-full border mt-[24px]' />
+          <div className="flex justify-between">
+            <span className="text-[20px] font-bold   text-[#333333]">Total Amount</span>
+            <span className="text-[18px] font-bold   text-[#333333]">${(totalAmount).toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+      
+        <button 
+        onClick={handleNavigation}
+        className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-lg">
+          Proceed to Checkout
+        </button>
+      </div>
+    </div>
     </>
   );
 }

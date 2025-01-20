@@ -3,6 +3,10 @@
 import React, { useState } from 'react'
 import star from "./assets/Star.png";
 
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -16,28 +20,55 @@ import { IoIosGitCompare } from "react-icons/io";
 
 import Image from "next/image";
 import IProduct from '@/types/foods';
+import { useAppDispatch } from '@/app/store/hooks';
+import { addToCart } from '@/app/store/feature/cart';
 
 function Product({product}:{product:IProduct}) {
 
-    const [quantity, setQuantity] = useState(1);
-    const [totalPrice, setTotalPrice] = useState(product.price);
-  
-    // Function to handle increment
-    const handleIncrement = () => {
-      const newQuantity = quantity + 1;
-      setQuantity(newQuantity);
-      setTotalPrice(newQuantity * product.price);
-    };
-  
-    // Function to handle decrement
-    const handleDecrement = () => {
-      if (quantity > 1) {
-        const newQuantity = quantity - 1;
-        setQuantity(newQuantity);
-        setTotalPrice(newQuantity * product.price);
-      }
-    };
-  
+  const dispatch = useAppDispatch();
+  const [quantity, setQuantity] = useState(1); // Start with 1 item
+  const [cartPrice, setCartPrice] = useState(product.price || 0);
+
+// Handle Increment
+const handleIncrement = () => {
+  const newQuantity = quantity + 1;
+  setQuantity(newQuantity);
+  setCartPrice(newQuantity * product.price); // Update price
+};
+ // Handle Decrement
+ const handleDecrement = () => {
+  if (quantity > 1) {
+    const newQuantity = quantity - 1;
+    setQuantity(newQuantity);
+    setCartPrice(newQuantity * product.price); 
+  } 
+};
+
+function handleAddToCart() {
+  const cartItem = {
+    slug: product.slugs,
+    title: product.name,
+    img: product.imageUrl,
+    price: product.price,
+    quantity: 1,
+  };
+
+  dispatch(addToCart(cartItem)); 
+}
+
+// Handle notification
+const handleNotification = () => {toast.success('🦄 Item was add in cart sucessfully', {
+  position: "top-center",
+  autoClose: 2000,
+  hideProgressBar: false,
+  closeOnClick: false,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "light",
+  transition: Bounce,
+  });
+}  
 
   return (
     <section className="px-[80px] md:px-[135px] flex flex-col md:flex-row gap-[55px]  my-[120px]">
@@ -92,7 +123,7 @@ function Product({product}:{product:IProduct}) {
 
         <div className="flex gap-10">
           <h3 className="md:text-[32px] text-[24px] font-bold mt-[64px] leading-[40px]">
-            ${totalPrice}
+            ${cartPrice.toFixed(2)}
           </h3>
           <h2 className="md:text-[32px] text-[20px] font-extralight mt-[64px] leading-[40px] ml-2 line-through">
             ${product?.originalPrice}
@@ -127,7 +158,13 @@ function Product({product}:{product:IProduct}) {
               +
             </button>
           </div>
+          <ToastContainer />
           <button
+          onClick={() => {
+              handleAddToCart(); 
+              handleNotification(); }
+            }
+          
             className="bg-[#FF9F0D] px-5 py-2 text-[12px] md:text-[16px] hover:bg-[#ffaf37] hover:text-white 
                                   flex justify-center items-center transition-transform duration-200 ease-in transform hover:scale-105"
           >

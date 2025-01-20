@@ -1,9 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import cheakout from "../assets/checkout.png";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { useAppSelector } from "../store/hooks";
 import {Cart} from "../utilits/type";
 import Link from "next/link";
@@ -25,7 +23,6 @@ export default function CheckoutPage() {
     (acc: number, product:Cart) => acc + product.price * product.quantity,
     0
   );
-  // Tax 
   let tax:string="20"
 
   return (
@@ -139,6 +136,7 @@ export default function CheckoutPage() {
                     <option value="us">United States</option>
                     <option value="uk">United Kingdom</option>
                     <option value="ca">Canada</option>
+                    <option value="uk">Pakistan</option>
                   </select>
                 </div>
               </div>
