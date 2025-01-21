@@ -161,7 +161,7 @@ function Page() {
           {/* No Products Found */}
           {!loading && !error && filteredProducts.length === 0 && (
             <div className="flex justify-center items-center pt-5 text-2xl font-bold">
-              <p>Opp's!!! Product is UnAviable</p>
+              <p>Opp&apos;s!!! Product is UnAviable</p>
             </div>
           )}
 
