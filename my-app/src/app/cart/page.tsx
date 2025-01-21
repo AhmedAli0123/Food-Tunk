@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Image from "next/image";
@@ -12,43 +12,45 @@ import {
 import { Cart } from "../utilits/type";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Bounce, toast } from "react-toastify";
+
 
 function CartPage() {
   const cart: Cart[] | any = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
 
+  // States for error and loading
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Passing As a props 
+
+  // Calculate the total amount
   const totalAmount = cart.reduce(
     (acc: number, product: Cart) => acc + product.price * product.quantity,
     0
   );
 
 
-  const handleNotification = () => {toast.error('🦄 Wow so easy!', {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: false,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
-    transition: Bounce,
-    });
-  }  
-
+ 
 
   // Cart Transfer to checkout page
   const router = useRouter();
-  function handleNavigation(){
-    if(cart.length==0){
-      alert("Cart is empty")
-      return;
-    }
-    router.push("/checkout")
-  }
+    // Navigate to checkout
+    const handleNavigation = () => {
+      if (cart.length === 0) {
+        setError("Cart is empty.");
+        return;
+      }
+  
+      setLoading(true);
+      setError(null);
+  
+      setTimeout(() => {
+        // Simulating an API call or delay
+        router.push("/checkout");
+        setLoading(false);
+      }, 1000);
+    };
+  
 
 
     
@@ -71,11 +73,21 @@ function CartPage() {
     <div className="max-w-5xl mx-auto py-10 px-4">
   <h1 className="text-xl md:text-2xl font-bold mb-6 text-white">Your Cart</h1>
 
-  {/* Conditional Rendering */}
-  {cart.length === 0 ? (
+  {error && (
+        <div className="mb-4 text-red-500 bg-red-100 p-3 rounded">
+          {error}
+        </div>
+      )}
+      {loading ? (
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+          <p className="ml-4 text-lg">Redirecting to checkout...</p>
+        </div>
+      ):cart.length === 0 ? (
     <div className="text-center text-gray-400 text-lg font-semibold py-10">
       Your Cart is empty
     </div>
+    
   ) : (
     <>
       {/* Table Header */}

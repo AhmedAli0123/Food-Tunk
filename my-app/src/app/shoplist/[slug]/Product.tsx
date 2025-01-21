@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react'
 import star from "./assets/Star.png";
-
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -26,14 +25,14 @@ import { addToCart } from '@/app/store/feature/cart';
 function Product({product}:{product:IProduct}) {
 
   const dispatch = useAppDispatch();
-  const [quantity, setQuantity] = useState(1); // Start with 1 item
+  const [quantity, setQuantity] = useState(1);
   const [cartPrice, setCartPrice] = useState(product.price || 0);
 
 // Handle Increment
 const handleIncrement = () => {
   const newQuantity = quantity + 1;
   setQuantity(newQuantity);
-  setCartPrice(newQuantity * product.price); // Update price
+  setCartPrice(newQuantity * product.price); 
 };
  // Handle Decrement
  const handleDecrement = () => {

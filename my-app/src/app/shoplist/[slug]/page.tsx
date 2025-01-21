@@ -18,7 +18,14 @@ async function Productpage({ params }: { params: { slug: string } }) {
    
   return (
     <>
-        <Product product={product}/>
+        
+        {product ? (
+          <Product product={product} />
+        ) : (
+          <div className="text-center text-2xl my-10 font-bold">
+            <p>Opps ! Product not found.</p>
+          </div>
+        )}
     </>
   );
 }

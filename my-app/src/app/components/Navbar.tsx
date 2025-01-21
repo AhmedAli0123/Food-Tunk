@@ -7,6 +7,9 @@ import { HiMenuAlt3 } from "react-icons/hi";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAppSelector } from "../store/hooks";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Product } from "../utilits/type";
+import { client } from "@/sanity/lib/client";
 
 export default function Navbar() {
   const cart = useAppSelector((state) => state.cart);
@@ -23,6 +26,7 @@ export default function Navbar() {
     { name: "Contact", path: "/SignUp" },
   ];
 
+  
   return (
     <nav className="bg-black text-white p-4 w-full">
       <div className="flex items-center justify-between px-4 md:px-[135px]">
