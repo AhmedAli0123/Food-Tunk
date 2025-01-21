@@ -112,13 +112,74 @@ The project is now well-positioned for further enhancements, including user auth
 
 ---
 
-## Next Steps
+# Day 06: Deployment Preparation and Staging Environment Setup
 
-- Implement user authentication and authorization.
+## Objective
+In Day 06, the focus was on preparing the marketplace application for deployment. This involved setting up a staging environment, configuring hosting platforms, ensuring the application is production-ready, and following best practices for handling environments.
 
-Stay tuned for further updates as we continue to build this Q-Commerce platform!
+## Deployment Strategy Planning
 
----
+### 1. **Choose a Hosting Platform: Vercel**
+   - **Easy Integration** with Next.js.
+   - **Automatic Deployment** from GitHub repository.
+   - **Scalability** for handling varying traffic.
+   - **Serverless Functions** for backend logic.
+
+### 2. **Finalize Application’s Interaction with Backend Services**
+   - **Sanity CMS**: Ensured content fetching works correctly.
+   - **Third-party APIs**: Verified secure API calls and proper handling of sensitive data.
+
+## Environment Variable Configuration
+
+### 1. **Secure API Keys, Database Credentials, and Sensitive Data**
+   - Stored API keys and credentials securely using `.env` files.
+
+### 2. **Configure Environment Variables in Vercel**
+   - Set up environment variables in the Vercel platform for secure deployment.
+
+## Staging Environment Setup
+
+### 1. **Deploy the Application to Staging**
+   - Pushed latest code to GitHub and linked a staging branch in Vercel.
+   - Vercel triggered automatic deployment.
+
+### 2. **Validate Deployment**
+   - Verified build success through Vercel logs and checked the staging URL.
+   - Tested all pages, features, and backend integrations for correctness.
+
+### 3. **Troubleshoot**
+   - Reviewed build logs and ensured environment variables were correctly configured.
+
+## Staging Environment Testing
+
+### 1. **Conduct Functional Testing**
+   - Used **Cypress** to test workflows and **Postman** to validate API responses.
+
+### 2. **Perform Performance Testing**
+   - Analyzed load times and performance with **Lighthouse** and **GTmetrix**.
+
+### 3. **Verify Responsiveness & Error Handling**
+   - Tested the site across different screen sizes and ensured proper error handling.
+
+### 4. **Document Test Results**
+   - Recorded all test outcomes, performance benchmarks, and unresolved issues.
+
+## Test Case Reporting
+
+Test cases were documented in a CSV file with the following details:
+
+| **Test Case ID** | **Description**           | **Steps**                                    | **Expected Result**      | **Actual Result**      | **Status** | **Remarks**            |
+|------------------|---------------------------|----------------------------------------------|--------------------------|------------------------|------------|------------------------|
+| TC001            | Validate product listing   | Open product page > Verify products          | Products displayed        | Products displayed      | Passed     | No issues found        |
+| TC002            | Test API error handling    | Disconnect API > Refresh page               | Show fallback message    | Fallback message shown  | Passed     | Handled gracefully     |
+| TC003            | Check cart functionality   | Add item to cart > Verify cart              | Cart updates correctly    | Cart updates correctly  | Passed     | Works as expected      |
+| TC004            | Test form validation       | Submit form with empty fields               | Display error message    | Error message displayed| Failed     | Missing validation     |
+| TC005            | Verify HTTPS connection    | Open site > Check HTTPS status              | HTTPS enabled             | HTTPS enabled          | Passed     | Secure connection      |
+
+## Conclusion
+
+On Day 06, the application was successfully deployed to a staging environment using Vercel. The application underwent functional, performance, and security testing, with all outcomes documented. The staging setup is now ready for validation before moving to the production environment.
+
 
 # Food-Tunk
 
