@@ -12,6 +12,7 @@ async function Productpage({ params }: { params: { slug: string } }) {
       price,
       originalPrice,
       tags,
+      category,
       "imageUrl": image.asset->url,
       "slug": slug.current,
    }`,{slug:params.slug});

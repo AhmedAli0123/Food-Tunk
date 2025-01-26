@@ -1,6 +1,6 @@
 export default interface IProduct {
     name: string;
-    slugs?:string
+    slug?:string | undefined;
     category: string;
     price: number;
     originalPrice: number;

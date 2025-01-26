@@ -19,7 +19,7 @@ const MenuComponent = () => {
 
   const route= useRouter()
     function handleNavigate() {
-      route.push(("../shopdetail"))
+      route.push(("../shoplist"))
     }
 
   return (
@@ -30,13 +30,13 @@ const MenuComponent = () => {
 
         <div className="flex justify-center mb-8">
           <ul className="flex flex-wrap justify-evenly space-x-2 sm:space-x-4">
-            <li className="cursor-pointer hover:text-yellow-500">Breakfast</li>
-            <li className="cursor-pointer hover:text-yellow-500">Lunch</li>
-            <li className="cursor-pointer hover:text-yellow-500">Dinner</li>
-            <li className="cursor-pointer hover:text-yellow-500">Dessert</li>
-            <li className="cursor-pointer hover:text-yellow-500">Drink</li>
-            <li className="cursor-pointer hover:text-yellow-500">Snack</li>
-            <li className="cursor-pointer hover:text-yellow-500">Soups</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Breakfast</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Lunch</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Dinner</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Dessert</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Drink</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Snack</li>
+            <li className="cursor-pointer hover:text-yellow-500" onClick={handleNavigate}>Soups</li>
           </ul>
         </div>
 

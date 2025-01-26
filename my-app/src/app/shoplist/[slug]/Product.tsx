@@ -21,6 +21,7 @@ import Image from "next/image";
 import IProduct from '@/types/foods';
 import { useAppDispatch } from '@/app/store/hooks';
 import { addToCart } from '@/app/store/feature/cart';
+import RelatedProd from './RelatedProd';
 
 function Product({product}:{product:IProduct}) {
 
@@ -45,7 +46,7 @@ const handleIncrement = () => {
 
 function handleAddToCart() {
   const cartItem = {
-    slug: product.slugs,
+    slug: product.slug,
     title: product.name,
     img: product.imageUrl,
     price: product.price,
@@ -70,6 +71,7 @@ const handleNotification = () => {toast.success('🦄 Item was add in cart suces
 }  
 
   return (
+    <>
     <section className="px-[80px] md:px-[135px] flex flex-col md:flex-row gap-[55px]  my-[120px]">
     {/* Creating Images */}
     <div className="w-[100%] md:w-[50%] flex justify-between gap-[24px]">
@@ -183,10 +185,10 @@ const handleNotification = () => {toast.success('🦄 Item was add in cart suces
         </h2>
 
         <h2 className="text-[#4F4F4F] text-[18px] font-normal mt-[8px]">
-          <span className="text-[#333333]">Category:</span> Pizza
+          <span className="text-[#333333]">Category:</span> {product?.category}
         </h2>
         <h2 className="text-[#4F4F4F] text-[18px] font-normal mt-[8px]">
-          <span className="text-[#333333]">Tags:</span> Our Shop
+          <span className="text-[#333333]">Tags:</span> {product?.tags.map((tag) => tag + ", ")}
         </h2>
 
         <div className="flex mt-[28px] items-center gap-[5px]">
@@ -201,6 +203,8 @@ const handleNotification = () => {toast.success('🦄 Item was add in cart suces
       </div>
     </div>
   </section>
+    <RelatedProd />
+  </>
   )
 }
 

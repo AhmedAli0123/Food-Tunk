@@ -50,7 +50,9 @@ function Blog() {
                             height={349}
                         />
                         <h2 className="text-[#FF9F0D] text-[16px] font-normal mt-[30px] px-[43px]">{post.date}</h2>
-                        <h2 className="text-white text-[24px] font-bold px-[43px] mt-[16px]">{post.title}</h2>
+                        <Link href={"/blog"}>
+                        <h2 className="text-white text-[24px] font-bold px-[43px] mt-[16px] hover:underline hover:text-[#FF9F0D]">{post.title}</h2>
+                        </Link>
                         <div className="text-white flex justify-between px-[43px] my-[32px]">
                             <Link href={"../shoplist"} className="hover:underline hover:text-[#FF9F0D]">Learn More</Link>
                             <div className="flex gap-[8px]">
