@@ -3,9 +3,9 @@ import { createClient } from 'next-sanity'
 import { apiVersion, dataset, projectId } from '../env'
 
 export const client = createClient({
-  projectId:process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
+  projectId:"wyzsknba",
+  dataset: "production",
   apiVersion: '2023-03-25',
   useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
-  token: process.env.SANITY_API_TOKEN,
+  token: "skLlt1g5MaMSxUu6DQzR0fKEmGjClyt46j3n49Kj2OOuaRXbVU1ssnN1ZleX5dpYy8zHpcns4OF1knUvRZI1uESIHvnfIaZo3qtRQv9uKBZZ64dxFi40dO88UOBPejdCRAhDDiaau4dLCCO6DMsxtO8JVqZOB3CRr0U877Nq35AsgV6SkQPY",
 })

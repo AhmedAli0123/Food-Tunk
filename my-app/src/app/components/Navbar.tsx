@@ -5,14 +5,14 @@ import { CiSearch } from "react-icons/ci";
 import { IoBagHandle } from "react-icons/io5";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useAppSelector } from "../store/hooks";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { client } from "@/sanity/lib/client";
 import IProduct from "@/types/foods";
 
 export default function Navbar() {
-  const cart = useAppSelector((state) => state.cart);
+
 
   // Router For Path
   const router = useRouter();
@@ -80,6 +80,26 @@ export default function Navbar() {
     router.push(`/shoplist/${slug}`);
   };
 
+  // Cart Length How many items in cart
+
+  const [cartLength, setCartLength] = useState(0);
+
+  useEffect(() => {
+    // Initial cart length
+    const cart = JSON.parse(localStorage.getItem("cart") || "{}");
+    setCartLength(Object.keys(cart).length);
+
+    // Create interval to check cart length periodically
+    const interval = setInterval(() => {
+      const updatedCart = JSON.parse(localStorage.getItem("cart") || "{}");
+      setCartLength(Object.keys(updatedCart).length);
+    }, 1000); // Check every second
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <nav className="bg-black text-white p-4 w-full">
       <div className="flex items-center justify-between px-4 md:px-[135px]">
@@ -98,16 +118,18 @@ export default function Navbar() {
               <Link href="/cart">
                 <IoBagHandle className="w-6 h-6 cursor-pointer" />
               </Link>
+              {cartLength > 0 && (
               <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                {cart.length}
+              {cartLength}
               </div>
+              )}
             </div>
             <ul className="flex flex-col gap-[10px] font-medium text-[16px] text-black">
               <SheetContent>
                 {navigationItems.map((item) => (
                   <li
                     key={item.path}
-                    className="hover:text-orange-500"
+                    className="hover:text-orange-500 cursor-pointer "
                     onClick={() => router.push(item.path)}
                   >
                     {item.name}
@@ -173,9 +195,12 @@ export default function Navbar() {
             <Link href="/cart">
               <IoBagHandle className="w-6 h-6 cursor-pointer" />
             </Link>
-            <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {cart.length}
+            
+            {cartLength > 0 && (
+              <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {cartLength}
             </div>
+            )}
           </div>
         </div>
       </div>

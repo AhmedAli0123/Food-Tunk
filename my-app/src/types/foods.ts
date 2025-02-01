@@ -1,6 +1,7 @@
 export default interface IProduct {
     name: string;
-    slug?:string | undefined;
+    slug?: string | "" | undefined;
+    _id?: string | "" ;
     category: string;
     price: number;
     originalPrice: number;
@@ -9,4 +10,5 @@ export default interface IProduct {
     imageUrl?:string
     description: string;
     available: boolean;
+    quantity?: number | 1;
   }

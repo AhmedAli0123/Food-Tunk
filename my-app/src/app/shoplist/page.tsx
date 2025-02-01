@@ -6,22 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { client } from "@/sanity/lib/client";
-import ReactLoading from "react-loading";
+import IProduct from "@/types/foods";
 
-// Define the Product type
-interface Product {
-  name: string;
-  price: number;
-  description: string;
-  category: string;
-  originalPrice: number;
-  image: string;
-  slug: string;
-}
+
 
 function Page() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
   const [sortOrder, setSortOrder] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false); // State for loading
@@ -36,6 +27,7 @@ function Page() {
       try {
         const productsData = await client.fetch(
           `*[_type == "food"]{ 
+            _id,
             name, 
             price, 
             description, 
@@ -81,7 +73,7 @@ function Page() {
         product.name.toLowerCase().includes(query) ||
         product.description.toLowerCase().includes(query) ||
         product.category.toLowerCase().includes(query) ||
-        product.slug.toLowerCase().includes(query)
+        (product.slug || "").toLowerCase().includes(query)
     );
     setFilteredProducts(filtered);
   };
@@ -168,13 +160,14 @@ function Page() {
           {/* Product List */}
           {!loading && !error && (
             <div className="grid grid-cols-2 gap-[34px] md:grid-cols-2 lg:grid-cols-3 mt-[24px]">
-              {filteredProducts.map((item: Product) => (
+              {filteredProducts.map((item: IProduct) => (
                 <Link href={`/shoplist/${item.slug}`} key={item.slug}>
                   <div className="w-[150px]  md:w-[300px]  rounded  hover:border-2 border-[#FF9F0D] transition-transform duration-200 ease-in transform hover:scale-105">
                     <div className="w-[150px] h-[200px] md:w-full md:h-[300px]">
                       <Image
-                        src={item.image}
+                        src={item.image || item.imageUrl || ""}
                         alt={item.name}
+                        loading="lazy"
                         width={1500}
                         height={1500}
                         unoptimized={true}

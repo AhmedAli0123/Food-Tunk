@@ -1,246 +1,272 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "../store/hooks";
-import {Cart} from "../utilits/type";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
+import IProduct from "@/types/foods";
+import { client } from "@/sanity/lib/client";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 export default function CheckoutPage() {
-  // Navigation
-    const router = useRouter()
-    function handleNavigation(){
-      router.push('/cart')
-    }
-    function handleOrderComplete(){
-      router.push('/ordercomplete')
-    }
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: null as number | null,
+    city: "",
+    address: "",
+    zipCode: "",
+    paymentMethod: "Cash on Delivery",
+  });
+  // Load cart from local storage
+  const [products, setProducts] = useState<IProduct[]>([]);
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "{}");
+    const cartItems = Object.values(cart) as IProduct[];
+    setProducts(cartItems);
+  }, []);
 
-    // Get Total Amount
-    const cart: Cart[]  | any= useAppSelector((state) => state.cart);
-  const totalAmount = cart.reduce(
-    (acc: number, product:Cart) => acc + product.price * product.quantity,
+
+  // Calculate the total price
+  const cartTotal = products.reduce(
+    (acc, product) => acc + product.price * (product.quantity ?? 1),
     0
   );
-  let tax:string="20"
+  // Calculate the Discount
+  const discount = products.reduce(
+    (acc, product) => acc + (product.originalPrice - product.price),
+    0
+  );
+  // Calculate the Tax
+  const tax = cartTotal * 0.2;
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Form validation
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.address ||
+      !formData.phoneNumber ||
+      !formData.city ||
+      !formData.zipCode
+    ) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+     await createOrder();
+  };
+
+  const MySwal = withReactContent(Swal);
+  // Create Order
+  const createOrder = async () => {
+    const validProducts = products.filter((product) => product._id); // Filter valid products
+    const order = {
+      _type: "order",
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber: formData.phoneNumber,
+      address: formData.address,
+      city: formData.city,
+      zipCode: formData.zipCode,
+      foods: validProducts.map((product, index) => ({
+        _type: "reference",
+        _ref: product._id,
+        _key: `food_${index}_${product._id}`,
+      })),
+      quantity: validProducts.map((product) => product.quantity),
+      total: cartTotal,
+      paymentMethod: formData.paymentMethod,
+      createdAt: new Date().toISOString(),
+    };
+  
+    try {
+      await client.create(order);
+  
+      // Show success notification
+      MySwal.fire({
+        title: "Order Placed!",
+        text: "Your order has been placed successfully.",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+      }).then(() => {
+        router.push("/ordercomplete"); // Redirect after confirmation
+        localStorage.removeItem("cart"); // Clear the cart
+      });
+    } catch (error) {
+      console.error("Error posting order:", error);
+  
+      // Show error notification
+      MySwal.fire({
+        title: "Error!",
+        text: "Failed to place the order. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#d33",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+ 
+  //Cart Navigation
+  const router = useRouter();
+  function handleCartNavigation() {
+    router.push("/cart");
+  }
+  
 
   return (
     <>
-     <section
-        className="bg-cover bg-center h-64 flex items-center justify-center"
-        style={{ backgroundImage: "url('/hero.png')" }}
-      >
-        <div className="text-center text-white">
-          <h2 className="text-4xl font-bold">Checkout Page</h2>
-          <p className="mt-[20px]">
-            <Link href="/" className="text-yellow-400">
-              Home
-            </Link>{" "}
-            &gt;Checkout Page
-          </p>
+  {/* Hero Section */}
+  <section
+    className="bg-cover bg-center h-64 flex items-center justify-center"
+    style={{ backgroundImage: "url('/hero.png')" }}
+  >
+    <div className="text-center text-white">
+      <h2 className="text-4xl font-bold">Checkout Page</h2>
+      <p className="mt-4">
+        <Link href="/" className="text-yellow-400 hover:text-yellow-500">
+          Home
+        </Link>{" "}
+        &gt; Checkout Page
+      </p>
+    </div>
+  </section>
+
+  {/* Checkout Form */}
+  <form
+    onSubmit={handleSubmit}
+    className="container mx-auto px-4 py-8 md:px-6 lg:px-8 flex flex-col lg:flex-row gap-8"
+  >
+    {/* Left Column - Form Details */}
+    <div className="w-full lg:w-1/2 space-y-6">
+      <h2 className="text-2xl font-bold">Billing Details</h2>
+      <div className="space-y-4">
+        <div>
+          <label className="block font-medium mb-1">First Name:</label>
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            placeholder="John"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
         </div>
-      </section>
-    
-    <div className="container px-[70px]  md:px-[135px]  py-8">
-      <div className="grid gap-8 lg:grid-cols-2 ">
-        {/* Left Column - Forms */}
-        <div className="space-y-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Shipping Address</h2>
-            <div className="grid gap-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="firstName"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    First name
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="lastName"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Last name
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Phone number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="company"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="country"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Country
-                  </label>
-                  <select
-                    id="country"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                    <option value="">Choose country</option>
-                    <option value="us">United States</option>
-                    <option value="uk">United Kingdom</option>
-                    <option value="ca">Canada</option>
-                    <option value="uk">Pakistan</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label
-                    htmlFor="city"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    City
-                  </label>
-                  <input
-                    type="text"
-                    id="city"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder="Choose city"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="zipCode"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Zip code
-                  </label>
-                  <input
-                    type="text"
-                    id="zipCode"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="address1"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Address 1
-                </label>
-                <input
-                  type="text"
-                  id="address1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="address2"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Address 2
-                </label>
-                <input
-                  type="text"
-                  id="address2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Billing Address</h2>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="sameAsShipping"
-                className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-              />
-              <label htmlFor="sameAsShipping" className="text-sm text-gray-700">
-                Same as shipping address
-              </label>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row md:justify-between gap-4 pt-4">
-            <button 
-            onClick={handleNavigation}
-            className="py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 w-full md:w-72 h-12 px-3">
-              Back to cart
-            </button>
-            <button className="px-6 py-2 bg-orange-500 text-white rounded-md shadow-sm text-sm font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 w-full md:w-72 h-12">
-              Proceed to shipping
-            </button>
-          </div>
+        <div>
+          <label className="block font-medium mb-1">Last Name:</label>
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+            placeholder="Doe"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
         </div>
+        <div>
+          <label className="block font-medium mb-1">Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="johndoe@example.com"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Phone:</label>
+          <input
+            type="tel"
+            name="phoneNumber"
+            value={formData.phoneNumber ==null ?"" : formData.phoneNumber}
+            onChange={handleChange}
+            placeholder="0300-1234567"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Address:</label>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="123 Main Street"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">City:</label>
+          <input
+            type="text"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+            placeholder="Karachi"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Zip Code:</label>
+          <input
+            type="text"
+            name="zipCode"
+            value={formData.zipCode}
+            onChange={handleChange}
+            placeholder="75500"
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+            required
+          />
+        </div>
+        <div>
+          <label className="block font-medium mb-1">Payment Method:</label>
+          <select
+            name="paymentMethod"
+            value={formData.paymentMethod}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+          >
+            <option value="Cash on Delivery">Cash on Delivery</option>
+            <option value="Credit/Debit Card">Credit/Debit Card</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-        {/* Right Column - Order Summary */}
-        <div className="p-6 rounded-lg border-2 border-gray-300">
-      {/* Order Summary Heading */}
-      <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+    {/* Right Column - Order Summary */}
+    <div className="w-full lg:w-1/2 p-6 rounded-lg border-2 border-gray-200 bg-gray-50">
+      <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
       {/* Order Items */}
       <div className="space-y-4">
-        {cart.map((product: Cart[] | any ) => (
-          <div key={product.id} className="flex items-center space-x-4">
+        {products.map((product: IProduct) => (
+          <div key={product.slug} className="flex items-center space-x-4">
             {/* Product Image */}
             <div className="relative h-16 w-16">
               <Image
-                src={product.img}
-                alt={product.title}
+                src={product.image || product.imageUrl || ""}
+                alt={product.name}
                 fill
                 className="rounded-md object-cover"
               />
@@ -248,10 +274,12 @@ export default function CheckoutPage() {
 
             {/* Product Details */}
             <div className="flex-1">
-              <h3 className="font-medium">{product.title}</h3>
-              <p className="text-sm text-gray-500">{product.quantity} x ${product.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-500">
-                Total: ${(product.quantity * product.price).toFixed(2)}
+              <h3 className="font-medium">{product.name}</h3>
+              <p className="text-sm text-gray-600">
+                {product.quantity} x ${product.price.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-600">
+                Total: ${(product.price * (product.quantity ?? 1)).toFixed(2)}
               </p>
             </div>
           </div>
@@ -259,10 +287,10 @@ export default function CheckoutPage() {
       </div>
 
       {/* Order Summary Details */}
-      <div className="mt-6 space-y-2 border-t pt-4">
+      <div className="mt-6 space-y-3 border-t pt-4">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Subtotal</span>
-          <span className="font-medium">${totalAmount.toFixed(2)}</span>
+          <span className="font-medium">${cartTotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Shipping</span>
@@ -270,28 +298,29 @@ export default function CheckoutPage() {
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Discount</span>
-          <span className="font-medium">0</span>
+          <span className="font-medium">-${discount}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-600">Tax</span>
-          <span className="font-medium">${tax}</span>
+          <span className="font-medium">${tax.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between border-t pt-2">
+        <div className="flex justify-between border-t pt-3">
           <span className="font-semibold">Total</span>
-          <span className="font-semibold">${(totalAmount + parseFloat(tax)).toFixed(2)}</span>
+          <span className="font-semibold">
+            ${(cartTotal + Number(tax)).toFixed(2)}
+          </span>
         </div>
       </div>
 
       {/* Place Order Button */}
       <button
-      onClick={handleOrderComplete}
-      className="w-full mt-10 px-6 py-2 bg-orange-500 text-white rounded-md shadow-sm text-sm font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500   h-12">
-      Place an order
-            </button> 
+        type="submit"
+        className="w-full mt-6 px-6 py-3 bg-orange-500 text-white rounded-lg shadow-sm text-lg font-semibold hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+      >
+        Place an Order
+      </button>
     </div>
-      </div>
-          
-    </div>
-    </>
+  </form>
+</>
   );
 }
