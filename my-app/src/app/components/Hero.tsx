@@ -9,13 +9,11 @@ import hero from "../assets/hero1.png";
 import { FaFacebookF } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaPinterestP } from "react-icons/fa6";
+import Link from "next/link";
 
 function Hero() {
 
-  const route= useRouter()
-  function handleNavigate() {
-    route.push(("../menu"))
-  }
+  
 
   return (
     <div className='py-[60px] px-3 md:px-[135px] bg-black lg:flex lg:gap-[100px]' >
@@ -48,13 +46,14 @@ function Hero() {
         </p>
 
         <div className="flex flex-col md:flex-row items-center md:items-start">
+          <Link href="/menu">
           <button 
-          onClick={handleNavigate}
           className="bg-[#FF9F0D] text-white w-[100px] h-[30px] md:w-[190px] md:h-[60px] rounded-[40px] mt-[32px] hover:bg-yellow-800
             transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white cursor-pointer
           ">
             See More
           </button>
+          </Link>
         </div>
       </div>
 

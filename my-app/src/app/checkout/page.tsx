@@ -71,6 +71,7 @@ export default function CheckoutPage() {
   // Create Order
   const createOrder = async () => {
     const validProducts = products.filter((product) => product._id); // Filter valid products
+    // Create Order
     const order = {
       _type: "order",
       firstName: formData.firstName,
@@ -90,10 +91,21 @@ export default function CheckoutPage() {
       paymentMethod: formData.paymentMethod,
       createdAt: new Date().toISOString(),
     };
-  
     try {
       await client.create(order);
-  
+      
+      //Cart Value is empty
+      if(products.length === 0){
+        MySwal.fire({
+          title: "Cart is Empty!",
+          text: "Your cart is empty. Please add some items to your cart before placing an order.",
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        })
+        return;
+      }
+
       // Show success notification
       MySwal.fire({
         title: "Order Placed!",
@@ -101,13 +113,13 @@ export default function CheckoutPage() {
         icon: "success",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
+        timer: 3000,
       }).then(() => {
         router.push("/ordercomplete"); // Redirect after confirmation
         localStorage.removeItem("cart"); // Clear the cart
       });
     } catch (error) {
       console.error("Error posting order:", error);
-  
       // Show error notification
       MySwal.fire({
         title: "Error!",

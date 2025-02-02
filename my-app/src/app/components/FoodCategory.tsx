@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 
 import Image from "next/image";
@@ -7,13 +6,10 @@ import food1 from "../assets/food1.png";
 import food2 from "../assets/food2.png";
 import food3 from "../assets/food3.png";
 import food4 from "../assets/food4.png";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function FoodCategory() {
-  const route = useRouter();
-  function handleNavigate() {
-    route.push("../shoplist");
-  }
+  
   return (
     <>
       <section className="bg-black md:px-[135px]   py-[50px]">
@@ -26,30 +22,34 @@ function FoodCategory() {
           </h1>
         </div>
         <div className="flex flex-col justify-center items-center   sm:grid sm:grid-cols-2 md:grid md:grid-cols-4 gap-[20px] mt-[50px]">
+          <Link href="/shoplist">
           <Image
             src={food1}
             alt=""
-            onClick={handleNavigate}
             className="w-[200px] md:w-[305px] md:h-[280px] transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white  cursor-pointer"
-          />
+            />
+          </Link>
+          <Link href="/shoplist">
           <Image
             src={food2}
             alt=""
-            onClick={handleNavigate}
             className="w-[200px] md:w-[280px] md:h-[280px] transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white  cursor-pointer"
           />
+          </Link>
+          <Link href="/shoplist">
           <Image
             src={food3}
             alt=""
-            onClick={handleNavigate}
-            className="w-[200px] md:w-[280px] md:h-[280px] transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white  cursor-pointer"
-          />
+              className="w-[200px] md:w-[280px] md:h-[280px] transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white  cursor-pointer"
+            />
+          </Link>
+          <Link href="/shoplist">
           <Image
             src={food4}
             alt=""
-            onClick={handleNavigate}
             className="w-[200px] md:w-[280px] md:h-[280px] transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white  cursor-pointer"
           />
+          </Link>
         </div>
       </section>
     </>

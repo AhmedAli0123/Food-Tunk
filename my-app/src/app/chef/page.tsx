@@ -3,18 +3,19 @@ import React from "react";
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import IChefs from "@/types/chefs";
+import Link from "next/link";
 
 
 const ChefGrid = async () => {
 
-  const chefs:IChefs[] = await client.fetch(`
-      *[_type == "chef"]{ 
-        name,
-        position,
-        "image": image.asset->url,
-        "slug": slug.current,
-      }
-    `);
+  const chefs:IChefs[] = await client.fetch(`*[_type =="chef"]{
+    _id,
+    position,
+    name,
+    image,
+    description,
+    "imageUrl": image.asset->url,
+    }`);
 
   return (
     <section>
@@ -34,36 +35,27 @@ const ChefGrid = async () => {
     </div>
   </div>
 
-    <div className="p-6 mt-20"> {/* Adding mt-20 for margin top */}
-      {/* Grid with responsive columns */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-6">
-        {chefs.map((chef:IChefs) => (
-          <div
-            key={chef.slug}
-            className="relative overflow-hidden rounded-lg shadow-lg bg-white flex flex-col transition-transform transform hover:scale-105 hover:shadow-xl border-4 border-transparent hover:border-purple-600 cursor-pointer" 
-                // Hover effect for other boxes
-            
-          >
-            {/* Chef Image */}
-            <div className="flex-1">
-              <Image
-                src={chef.image}
-                alt={chef.name}
-                width={400}
-                height={400}
-                className="w-full h-full object-cover rounded-t-lg"
-              />
-            </div>
-
-            {/* Static Information Section Below Image */}
-            <div className="p-4 text-center">
-              <h3 className="text-gray-800 font-bold text-lg">{chef.name}</h3>
-              <p className="text-gray-600">{chef.position}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 mb-12 md:px-[135px]">
+          {chefs.map((chef: any) => (
+            <Link href={`/chef/${chef._id}`} key={chef.slug} className="group">
+              <div className="relative">
+                <Image
+                  src={chef.imageUrl || chef.image}
+                  alt={chef.name}
+                  width={400}
+                  height={400}
+                  className="w-full h-auto object-cover transition-transform transform group-hover:scale-105 group-hover:shadow-xl rounded-xl"
+                />
+                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity rounded-xl" />
+              </div>
+              <h1 className="text-black text-[20px] font-bold mt-4 group-hover:text-yellow-500">
+                {chef.name}
+              </h1>
+              <p className="text-gray-800 font-bold text-[16px]">Position: {chef.position}</p>
+              <p className="text-gray-800 text-[16px]">{chef.description}</p>
+            </Link>
+          ))}
+        </div>
     </section>
   );
 };

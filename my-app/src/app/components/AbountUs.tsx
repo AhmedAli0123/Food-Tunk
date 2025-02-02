@@ -1,3 +1,4 @@
+
 import React from "react";
 
 import Image from "next/image";
@@ -8,13 +9,10 @@ import { FaCheck } from "react-icons/fa6";
 import pic1 from "../assets/about1.png";
 import pic2 from "../assets/about2.png";
 import pic3 from "../assets/about3.png";
+import Link from "next/link";
 
 function AbountUs() {
 
-  const route= useRouter()
-    function handleNavigate() {
-      route.push(("../about"))
-    }
 
   return (
     <section className="bg-black px-3 md:px-[135px] flex flex-col justify-evenly md:flex-row  md:items-center py-[50px]">
@@ -59,12 +57,13 @@ function AbountUs() {
         </ul>
 
         <div className="flex flex-col md:flex-row items-center md:items-start">
+          <Link href="/about">
           <button
-          onClick={handleNavigate}
           className="bg-[#FF9F0D] text-white w-[100px] h-[30px] md:w-[190px] md:h-[60px] rounded-[40px] mt-[32px] hover:bg-yellow-800
             transition-transform transform hover:scale-105 hover:shadow-xl border  hover:border-white cursor-pointer">
             See More
           </button>
+          </Link>
         </div>
       </div>
 
