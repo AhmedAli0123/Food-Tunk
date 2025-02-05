@@ -99,7 +99,14 @@ function CartPage() {
   // Navigate to checkout
   const handleNavigation = () => {
     if (products.length === 0) {
-      alert("Cart is empty.");
+      MySwal.fire({
+        title: "Cart is empty!",
+        text: "Please add some items to your cart.",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+        timer: 3000,
+      })
       setError("Cart is empty.");
       return;
     }
@@ -117,9 +124,24 @@ function CartPage() {
 
   const handleCouponCode = () => {
     if (couponInput === "Ahmed") {
-      alert("Coupon code applied successfully");
+        // Generate Notification
+        MySwal.fire({
+          title: "Coupon Applied!",
+          text: "Your coupon has been applied successfully.",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+          timer: 3000,
+        });
     } else {
-      alert("Invalid coupon code");
+      MySwal.fire({
+        title: "Invalid Coupon Code!",
+        text: "Please enter a valid coupon code.",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+        timer: 3000,
+      })
       setCouponInput(""); // Clear input after failed attempt
       return;
     }
@@ -283,12 +305,12 @@ function CartPage() {
             <span className="text-white">$0.00</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Discount</span>
-            <span className="text-white">-${discount.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
             <span className="text-gray-400">Tax</span>
             <span className="text-white">${tax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-400">Discount</span>
+            <span className="text-white">-${discount.toFixed(2)}</span>
           </div>
           <hr className="border-gray-700" />
           <div className="flex justify-between">
